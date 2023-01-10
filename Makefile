@@ -3,9 +3,12 @@ init:
 	pip3 install mypy
 
 lint:
-	@pylint *.py
+	@pylint geometry tests
 
 check:
 	@mypy .
+
+test:
+	@python3 -m unittest discover --verbose tests
 
 .PHONY: init lint check
