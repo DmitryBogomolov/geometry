@@ -6,6 +6,11 @@ class Vec3(NamedTuple):
     y: float
     z: float
 
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, Vec3):
+            return eq3(self, other)
+        return False
+
 def _eq(a: float, b: float) -> bool:
     return abs(a - b) < 1E-8
 
@@ -40,7 +45,8 @@ def pos3(v: Vec3) -> Vec3:
     return mul3(v, +1)
 
 def norm3(v: Vec3) -> Vec3:
-    return mul3(v, 1 / len3(v))
+    vec_len = len3(v)
+    return mul3(v, 1 / vec_len) if not _eq(vec_len, 0) else ZERO3
 
 def add3(a: Vec3, b: Vec3) -> Vec3:
     return Vec3(a.x + b.x, a.y + b.y, a.z + b.z)
