@@ -80,3 +80,33 @@ class TestRelations3(unittest.TestCase):
             ),
             Line3(anchor=Vec3(1, 4, 2), direction=Vec3(0, 2, 0)),
         )
+
+    def test_line_line_distance(self):
+        self.assertAlmostEqual(
+            r3.line_line_distance(
+                Line3(anchor=Vec3(3, 2, 4), direction=Vec3(2, 1, 0)),
+                Line3(anchor=Vec3(2, 3, 2), direction=Vec3(1, 2, 0)),
+            ),
+            2,
+        )
+        self.assertAlmostEqual(
+            r3.line_line_distance(
+                Line3(anchor=Vec3(3, 2, 3), direction=Vec3(2, 1, 0)),
+                Line3(anchor=Vec3(2, 3, 3), direction=Vec3(1, 2, 0)),
+            ),
+            0,
+        )
+        self.assertAlmostEqual(
+            r3.line_line_distance(
+                Line3(anchor=Vec3(3, 2, 5), direction=Vec3(3, 3, 0)),
+                Line3(anchor=Vec3(3, 2, 1), direction=Vec3(3, 3, 0)),
+            ),
+            4,
+        )
+        self.assertAlmostEqual(
+            r3.line_line_distance(
+                Line3(anchor=Vec3(3, 2, 1), direction=Vec3(3, 3, 0)),
+                Line3(anchor=Vec3(3, 2, 1), direction=Vec3(3, 3, 0)),
+            ),
+            0,
+        )

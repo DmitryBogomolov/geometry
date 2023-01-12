@@ -1,6 +1,6 @@
 import typing
 import math
-from .vec3 import Vec3, add3, sub3, mul3, len3, project3, norm3, dot3, is_zero3
+from .vec3 import Vec3, add3, sub3, mul3, len3, project3, norm3, dot3, is_zero3, cross3
 from .line3 import Line3
 from .plane3 import Plane3
 
@@ -81,3 +81,18 @@ def line_plane_projection(line: Line3, plane: Plane3) -> Line3:
     if is_zero3(direction_proj):
         return Line3(anchor=anchor_proj, direction=line.direction)
     return Line3(anchor=anchor_proj, direction=direction_proj)
+
+def line_line_distance(a_line: Line3, b_line: Line3) -> float:
+    '''Finds distance between two lines.
+
+    Cross product of lines directions gives normal that defines set of planes.
+    (normal, line_1_point) = distance_1 - plane that contains line 1.
+    (normal, line_2_point) = distance_2 - plane that contains line 2.
+    (normal, line_1_point - line_2_point) - distance between planes.
+
+    If lines are collinear then take distance from point of one line to other line.
+    '''
+    normal = norm3(cross3(a_line.direction, b_line.direction))
+    if is_zero3(normal):
+        return point_line_distance(a_line.anchor, b_line)
+    return abs(dot3(normal, sub3(a_line.anchor, b_line.anchor)))
