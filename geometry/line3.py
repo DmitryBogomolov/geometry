@@ -1,14 +1,15 @@
-from typing import NamedTuple
+import typing
 from .vec3 import Vec3, ZERO3, XUNIT3, YUNIT3, ZUNIT3, eq3
 
-class Line3(NamedTuple):
+class Line3(typing.NamedTuple):
     anchor: Vec3
     direction: Vec3
 
     def __eq__(self, other: object) -> bool:
-        if isinstance(other, Line3):
-            return eq_line3(self, other)
-        return False
+        try:
+            return eq_line3(self, typing.cast(Line3, other))
+        except: # pylint: disable=bare-except
+            return False
 
 OX3 = Line3(anchor=ZERO3, direction=XUNIT3)
 OY3 = Line3(anchor=ZERO3, direction=YUNIT3)
