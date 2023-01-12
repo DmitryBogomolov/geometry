@@ -12,9 +12,6 @@ class Vec3(typing.NamedTuple):
         except: # pylint: disable=bare-except
             return False
 
-def _eq(a: float, b: float) -> bool:
-    return abs(a - b) < 1E-8
-
 ZERO3 = Vec3(0, 0, 0)
 UNIT3 = Vec3(1, 1, 1)
 XUNIT3 = Vec3(1, 0, 0)
@@ -24,7 +21,7 @@ ZUNIT3 = Vec3(0, 0, 1)
 def eq3(a: Vec3, b: Vec3) -> bool:
     (ax, ay, az) = a
     (bx, by, bz) = b
-    return _eq(ax, bx) and _eq(ay, by) and _eq(az, bz)
+    return math.isclose(ax, bx) and math.isclose(ay, by) and math.isclose(az, bz)
 
 def dot3(a: Vec3, b: Vec3) -> float:
     (ax, ay, az) = a
@@ -35,10 +32,10 @@ def len3(v: Vec3) -> float:
     return math.sqrt(dot3(v, v))
 
 def is_zero3(v: Vec3) -> bool:
-    return _eq(dot3(v, v), 0)
+    return math.isclose(dot3(v, v), 0)
 
 def is_unit3(v: Vec3) -> bool:
-    return _eq(dot3(v, v), 1)
+    return math.isclose(dot3(v, v), 1)
 
 def mul3(v: Vec3, k: float) -> Vec3:
     (vx, vy, vz) = v
@@ -52,7 +49,7 @@ def pos3(v: Vec3) -> Vec3:
 
 def norm3(v: Vec3) -> Vec3:
     vec_len = len3(v)
-    return mul3(v, 1 / vec_len) if not _eq(vec_len, 0) else ZERO3
+    return mul3(v, 1 / vec_len) if not math.isclose(vec_len, 0) else ZERO3
 
 def add3(a: Vec3, b: Vec3) -> Vec3:
     (ax, ay, az) = a
@@ -73,7 +70,7 @@ def angle3(a: Vec3, b: Vec3) -> float:
     return math.acos(dot3(norm3(a), norm3(b)))
 
 def orthogonal3(a: Vec3, b: Vec3) -> bool:
-    return _eq(dot3(a, b), 0)
+    return math.isclose(dot3(a, b), 0)
 
 def collinear3(a: Vec3, b: Vec3) -> bool:
     return is_zero3(cross3(a, b))

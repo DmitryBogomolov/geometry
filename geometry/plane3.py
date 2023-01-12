@@ -1,5 +1,6 @@
 import typing
-from .vec3 import Vec3, XUNIT3, YUNIT3, ZUNIT3, eq3, _eq
+import math
+from .vec3 import Vec3, XUNIT3, YUNIT3, ZUNIT3, eq3
 
 class Plane3(typing.NamedTuple):
     normal: Vec3
@@ -16,4 +17,4 @@ YOZ3 = Plane3(normal=XUNIT3, distance=0)
 ZOX3 = Plane3(normal=YUNIT3, distance=0)
 
 def eq_plane3(a: Plane3, b: Plane3) -> bool:
-    return eq3(a.normal, b.normal) and _eq(a.distance, b.distance)
+    return eq3(a.normal, b.normal) and math.isclose(a.distance, b.distance)
