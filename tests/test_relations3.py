@@ -32,3 +32,34 @@ class TestRelations3(unittest.TestCase):
         self.assertAlmostEqual(r3.point_plane_distance(Vec3(0, 4, 9), plane), 0)
         self.assertAlmostEqual(r3.point_plane_distance(Vec3(1, 0, 4), plane), 4)
         self.assertAlmostEqual(r3.point_plane_distance(Vec3(2, 9, 1), plane), 5)
+
+    def test_line_plane_intersection(self):
+        plane = Plane3(normal=Vec3(0, 5, 0), distance=4)
+        self.assertEqual(
+            r3.line_plane_intersection(
+                Line3(anchor=Vec3(4, 2, 0), direction=Vec3(0, 2, 3)),
+                plane,
+            ),
+            Vec3(4, 4, 3),
+        )
+        self.assertEqual(
+            r3.line_plane_intersection(
+                Line3(anchor=Vec3(1, 2, 0), direction=Vec3(0, -2, 0)),
+                plane,
+            ),
+            Vec3(1, 4, 0),
+        )
+        self.assertEqual(
+            r3.line_plane_intersection(
+                Line3(anchor=Vec3(1, 4, 0), direction=Vec3(2, 0, 2)),
+                plane,
+            ),
+            Line3(anchor=Vec3(1, 4, 0), direction=Vec3(2, 0, 2)),
+        )
+        self.assertEqual(
+            r3.line_plane_intersection(
+                Line3(anchor=Vec3(1, 3, 0), direction=Vec3(2, 0, 2)),
+                plane,
+            ),
+            None,
+        )
