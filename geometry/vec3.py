@@ -1,15 +1,16 @@
-from typing import NamedTuple
+import typing
 import math
 
-class Vec3(NamedTuple):
+class Vec3(typing.NamedTuple):
     x: float
     y: float
     z: float
 
     def __eq__(self, other: object) -> bool:
-        if isinstance(other, Vec3):
-            return eq3(self, other)
-        return False
+        try:
+            return eq3(self, typing.cast(Vec3, other))
+        except: # pylint: disable=bare-except
+            return False
 
 def _eq(a: float, b: float) -> bool:
     return abs(a - b) < 1E-8
@@ -21,10 +22,14 @@ YUNIT3 = Vec3(0, 1, 0)
 ZUNIT3 = Vec3(0, 0, 1)
 
 def eq3(a: Vec3, b: Vec3) -> bool:
-    return _eq(a.x, b.x) and _eq(a.y, b.y) and _eq(a.z, b.z)
+    (ax, ay, az) = a
+    (bx, by, bz) = b
+    return _eq(ax, bx) and _eq(ay, by) and _eq(az, bz)
 
 def dot3(a: Vec3, b: Vec3) -> float:
-    return a.x * b.x + a.y * b.y + a.z * b.z
+    (ax, ay, az) = a
+    (bx, by, bz) = b
+    return ax * bx + ay * by + az * bz
 
 def len3(v: Vec3) -> float:
     return math.sqrt(dot3(v, v))
@@ -36,7 +41,8 @@ def is_unit3(v: Vec3) -> bool:
     return _eq(dot3(v, v), 1)
 
 def mul3(v: Vec3, k: float) -> Vec3:
-    return Vec3(v.x * k, v.y * k, v.z * k)
+    (vx, vy, vz) = v
+    return Vec3(vx * k, vy * k, vz * k)
 
 def neg3(v: Vec3) -> Vec3:
     return mul3(v, -1)
@@ -49,13 +55,19 @@ def norm3(v: Vec3) -> Vec3:
     return mul3(v, 1 / vec_len) if not _eq(vec_len, 0) else ZERO3
 
 def add3(a: Vec3, b: Vec3) -> Vec3:
-    return Vec3(a.x + b.x, a.y + b.y, a.z + b.z)
+    (ax, ay, az) = a
+    (bx, by, bz) = b
+    return Vec3(ax + bx, ay + by, az + bz)
 
 def sub3(a: Vec3, b: Vec3) -> Vec3:
-    return Vec3(a.x - b.x, a.y - b.y, a.z - b.z)
+    (ax, ay, az) = a
+    (bx, by, bz) = b
+    return Vec3(ax - bx, ay - by, az - bz)
 
 def cross3(a: Vec3, b: Vec3) -> Vec3:
-    return Vec3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x)
+    (ax, ay, az) = a
+    (bx, by, bz) = b
+    return Vec3(ay * bz - az * by, az * bx - ax * bz, ax * by - ay * bx)
 
 def angle3(a: Vec3, b: Vec3) -> float:
     return math.acos(dot3(norm3(a), norm3(b)))
@@ -70,11 +82,12 @@ def rotate3(v: Vec3, axis: Vec3, angle: float) -> Vec3:
     c = math.cos(angle)
     s = math.sin(angle)
     t = 1 - c
-    (x, y, z) = norm3(axis)
+    (nx, ny, nz) = norm3(axis)
+    (vx, vy, vz) = v
     return Vec3(
-        v.x * (x * x * t + c) + v.y * (x * y * t - z * s) + v.z * (x * z * t + y * s),
-        v.x * (y * x * t - z * s) + v.y * (y * y * t + c) + v.z * (y * z * t - x * s),
-        v.x * (z * x * t - y * s) + v.y * (z * y * t + x * s) + v.z * (z * z * t + c),
+        vx * (nx * nx * t + c) + vy * (nx * ny * t - nz * s) + vz * (nx * nz * t + ny * s),
+        vx * (ny * nx * t - nz * s) + vy * (ny * ny * t + c) + vz * (ny * nz * t - nx * s),
+        vx * (nz * nx * t - ny * s) + vy * (nz * ny * t + nx * s) + vz * (nz * nz * t + c),
     )
 
 def project3(v: Vec3, axis: Vec3) -> Vec3:
