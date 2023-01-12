@@ -63,3 +63,20 @@ class TestRelations3(unittest.TestCase):
             ),
             None,
         )
+
+    def test_line_plane_projection(self):
+        plane = Plane3(normal=Vec3(0, 5, 0), distance=4)
+        self.assertEqual(
+            r3.line_plane_projection(
+                Line3(anchor=Vec3(1, 3, 2), direction=Vec3(2, 1, 3)),
+                plane,
+            ),
+            Line3(anchor=Vec3(1, 4, 2), direction=Vec3(2, 0, 3)),
+        )
+        self.assertEqual(
+            r3.line_plane_projection(
+                Line3(anchor=Vec3(1, 3, 2), direction=Vec3(0, 2, 0)),
+                plane,
+            ),
+            Line3(anchor=Vec3(1, 4, 2), direction=Vec3(0, 2, 0)),
+        )

@@ -1,6 +1,6 @@
 import typing
 import math
-from .vec3 import Vec3, add3, sub3, mul3, len3, project3, norm3, dot3
+from .vec3 import Vec3, add3, sub3, mul3, len3, project3, norm3, dot3, is_zero3
 from .line3 import Line3
 from .plane3 import Plane3
 
@@ -65,3 +65,19 @@ def line_plane_intersection(line: Line3, plane: Plane3) -> typing.Union[Vec3, Li
     if math.isclose(den, 0):
         return None
     return add3(line.anchor, mul3(line.direction, num / den))
+
+def line_plane_projection(line: Line3, plane: Plane3) -> Line3:
+    '''Projects line onto plane.
+
+    Take two line points, project them onto plane.
+    If line is orthogonal to plane then two projected points are same.
+    In that case use original line direction.
+    '''
+
+    anchor_proj = point_plane_projection(line.anchor, plane)
+    other_anchor = add3(line.anchor, line.direction)
+    other_anchor_proj = point_plane_projection(other_anchor, plane)
+    direction_proj = sub3(other_anchor_proj, anchor_proj)
+    if is_zero3(direction_proj):
+        return Line3(anchor=anchor_proj, direction=line.direction)
+    return Line3(anchor=anchor_proj, direction=direction_proj)
