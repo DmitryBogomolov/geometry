@@ -28,7 +28,7 @@ def point_plane_projection(target_point: Vec3, plane: Plane3) -> Vec3:
     For an arbitrary plane point project vector from target point to plane point onto plane normal.
     Offset target point by that projection.
 
-    Set of plane points is defined by the equation: (normalized_normal, x) = distance.
+    Set of plane points is defined by the equation: `(normalized_normal, x) = distance`.
     '''
     plane_point = mul3(norm3(plane.normal), plane.distance)
     target_to_plane_point_dir = sub3(plane_point, target_point)
@@ -46,12 +46,12 @@ def point_plane_distance(target_point: Vec3, plane: Plane3) -> float:
 def line_plane_intersection(line: Line3, plane: Plane3) -> typing.Union[Vec3, Line3, None]:
     '''Finds intersection of line and plane.
 
-    Set of line points is defined by the equation: anchor + direction * t = x
-    Set of plane points is defined by the equation: (normalized_normal, x) = distance
+    Set of line points is defined by the equation: `anchor + direction * t = x`
+    Set of plane points is defined by the equation: `(normalized_normal, x) = distance`
 
     Substitution of x gives
-    (normalized_normal, anchor) + (normalized_normal, direction) * t = distance
-    t = (distance - (normalized_normal, anchor)) / (normalized_normal, direction)
+    `(normalized_normal, anchor) + (normalized_normal, direction) * t = distance`
+    `t = (distance - (normalized_normal, anchor)) / (normalized_normal, direction)`
 
     If line direction is orthogonal to plane normal then either no intersection or
     line belongs to plane (if line point belongs to plane).
@@ -86,9 +86,9 @@ def line_line_distance(a_line: Line3, b_line: Line3) -> float:
     '''Finds distance between two lines.
 
     Cross product of lines directions gives normal that defines set of planes.
-    (normal, line_1_point) = distance_1 - plane that contains line 1.
-    (normal, line_2_point) = distance_2 - plane that contains line 2.
-    (normal, line_1_point - line_2_point) - distance between planes.
+    Plane that contains line 1: `(normal, line_1_point) = distance_1`.
+    Plane that contains line 2: `(normal, line_2_point) = distance_2`.
+    Distance between planes: `(normal, line_1_point - line_2_point)`.
 
     If lines are collinear then take distance from point of one line to other line.
     '''
@@ -96,3 +96,43 @@ def line_line_distance(a_line: Line3, b_line: Line3) -> float:
     if is_zero3(normal):
         return point_line_distance(a_line.anchor, b_line)
     return abs(dot3(normal, sub3(a_line.anchor, b_line.anchor)))
+
+def line_line_intersection(a_line: Line3, b_line: Line3) -> \
+    typing.Union[typing.Tuple[Vec3, Vec3], None]:
+    '''Finds intersection between two lines.
+
+    Line 1: `p1 = r1 + t1 * e1`.
+    Line 2: `p2 = r2 + t2 * e2`.
+    Cross product of lines directions gives normal that defines set of planes: `n = e1 x e2`.
+    Cross product of lines directions and plane normal gives lines normals.
+    Intersection point, line 1 point, line 2 point form triangle on that plane.
+
+    For line 1 projection of `r2 - r1` onto line 2 normal gives side of right-angled triangle.
+    Angle sine is given by cross product: `|n| = |e1| * |e2| * sin`.
+    Hypotenuse of triangle gives distance from `r1` to intersection point.
+    Semiplanes (`e2`) of `r2 - r1` and `e1` give distance direction.
+    `|n| / (|e1| * |e2|) * |(e2 x n, r2 - r1)| / |e2 x n|
+        * sign(e2 x n, r2 - r1) * sign(e2 x n, e1)`
+    After simplification
+    `(|e1| / (n, n)) * (e2 x n, r2 - r1) * sign(e2 x n, e1)`
+    So
+    `t1 = (1 / (n, n)) * (e2 x n, r2 - r1) * sign(e2 x n, e1)`
+    `t2 = (1 / (n, n)) * (e1 x n, r1 - r2) * sign(e1 x n, e2)`
+    Similarly for line 2.
+
+    If lines are collinear then no intersection.
+    '''
+    normal = cross3(a_line.direction, b_line.direction)
+    if is_zero3(normal):
+        return None
+    a_normal = cross3(a_line.direction, normal)
+    b_normal = cross3(b_line.direction, normal)
+    k = 1 / dot3(normal, normal)
+    a_t = k * dot3(b_normal, sub3(b_line.anchor, a_line.anchor)) \
+        * math.copysign(1, dot3(b_normal, a_line.direction))
+    b_t = k * dot3(a_normal, sub3(a_line.anchor, b_line.anchor)) \
+        * math.copysign(1, dot3(a_normal, b_line.direction))
+    return (
+        add3(a_line.anchor, mul3(a_line.direction, a_t)),
+        add3(b_line.anchor, mul3(b_line.direction, b_t)),
+    )

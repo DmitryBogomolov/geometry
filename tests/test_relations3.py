@@ -110,3 +110,52 @@ class TestRelations3(unittest.TestCase):
             ),
             0,
         )
+
+    def test_line_line_intersection(self):
+        self.assertEqual(
+            r3.line_line_intersection(
+                Line3(anchor=Vec3(3, 2, 4), direction=Vec3(2, 1, 0)),
+                Line3(anchor=Vec3(2, 3, 2), direction=Vec3(1, 2, 0)),
+            ),
+            (
+                Vec3(1, 1, 4),
+                Vec3(1, 1, 2),
+            ),
+        )
+        self.assertEqual(
+            r3.line_line_intersection(
+                Line3(anchor=Vec3(-3, -1, 4), direction=Vec3(2, 1, 0)),
+                Line3(anchor=Vec3(2, 3, 2), direction=Vec3(1, 2, 0)),
+            ),
+            (
+                Vec3(1, 1, 4),
+                Vec3(1, 1, 2),
+            ),
+        )
+        self.assertEqual(
+            r3.line_line_intersection(
+                Line3(anchor=Vec3(-3, -1, 4), direction=Vec3(2, 1, 0)),
+                Line3(anchor=Vec3(2, 3, 2), direction=Vec3(-1, -2, 0)),
+            ),
+            (
+                Vec3(1, 1, 4),
+                Vec3(1, 1, 2),
+            ),
+        )
+        self.assertEqual(
+            r3.line_line_intersection(
+                Line3(anchor=Vec3(1, 1, 4), direction=Vec3(2, 1, 0)),
+                Line3(anchor=Vec3(1, 1, 2), direction=Vec3(1, 2, 0)),
+            ),
+            (
+                Vec3(1, 1, 4),
+                Vec3(1, 1, 2),
+            ),
+        )
+        self.assertEqual(
+            r3.line_line_intersection(
+                Line3(anchor=Vec3(3, 2, 4), direction=Vec3(2, 1, 0)),
+                Line3(anchor=Vec3(2, 3, 2), direction=Vec3(2, 1, 0)),
+            ),
+            None,
+        )
