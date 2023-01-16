@@ -159,3 +159,19 @@ class TestRelations3(unittest.TestCase):
             ),
             None,
         )
+
+    def test_plane_plane_intersection(self):
+        self.assertEqual(
+            r3.plane_plane_intersection(
+                Plane3(normal=Vec3(2, 0, 0), distance=4),
+                Plane3(normal=Vec3(0, 3, 0), distance=5),
+            ),
+            Line3(anchor=Vec3(4, 5, 0), direction=Vec3(0, 0, 6)),
+        )
+        self.assertEqual(
+            r3.plane_plane_intersection(
+                Plane3(normal=Vec3(0, 0, 2), distance=4),
+                Plane3(normal=Vec3(0, 0, 3), distance=5),
+            ),
+            None,
+        )

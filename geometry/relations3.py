@@ -136,3 +136,29 @@ def line_line_intersection(a_line: Line3, b_line: Line3) -> \
         add3(a_line.anchor, mul3(a_line.direction, a_t)),
         add3(b_line.anchor, mul3(b_line.direction, b_t)),
     )
+
+def plane_plane_intersection(a_plane: Plane3, b_plane: Plane3) -> typing.Union[Line3, None]:
+    '''Finds intersection between planes.
+
+    Cross product of planes normals gives line direction.
+    Pick point on each line (for certainty pick closest to (0,0,0) points).
+    Cross products of planes normals and line direction gives directions of intersecting lines.
+    Find intersection point. Take it as intersection line point.
+
+    If planes are parallel then no intersection.
+    '''
+
+    direction = cross3(a_plane.normal, b_plane.normal)
+    if is_zero3(direction):
+        return None
+    a_anchor = mul3(norm3(a_plane.normal), a_plane.distance)
+    b_anchor = mul3(norm3(b_plane.normal), b_plane.distance)
+    a_direction = cross3(a_plane.normal, direction)
+    b_direction = cross3(b_plane.normal, direction)
+    a_point, b_point = typing.cast(typing.Tuple[Vec3, Vec3], line_line_intersection(
+        Line3(anchor=a_anchor, direction=a_direction),
+        Line3(anchor=b_anchor, direction=b_direction)
+    ))
+    # They are equal actually.
+    point = mul3(add3(a_point, b_point), 0.5)
+    return Line3(anchor=point, direction=direction)
